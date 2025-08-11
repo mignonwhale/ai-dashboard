@@ -1,59 +1,154 @@
-# CLAUDE.md
+# AI 어시스턴트 대시보드
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## 📌 프로젝트 개요
 
-## Project Overview
+AI 어시스턴트 대시보드는 다양한 AI 기능을 하나의 웹 대시보드에서 제공하는 올인원 생산성 툴입니다.
 
-This is a Next.js 15 application built with TypeScript, React 19, and Tailwind CSS 4. It's currently a fresh Next.js project with minimal customization - essentially the default template structure.
+사용자는 로그인 후, 다음과 같은 AI 기반 서비스를 이용할 수 있습니다.
 
-## Package Manager
+1. **AI 챗봇**
+  - 문서 요약
+  - 질문 응답 (OpenAI API 기반)
+2. **AI 텍스트 생성기**
+  - 블로그 글 초안
+  - 마케팅 문구
+3. **파일 분석**
+  - PDF 업로드 → AI 요약/검색
+4. **할 일 관리 + AI 추천**
+  - 사용자의 일정 기반 오늘 해야 할 일 자동 추천
+5. **데이터 시각화**
+  - CSV 업로드 → AI 분석 → 그래프/차트 생성
 
-This project uses **Yarn 4.9.2** as the package manager (configured via `packageManager` field in package.json).
+---
 
-## Development Commands
+## 🛠 기술 스택
 
-```bash
-# Install dependencies
-yarn
+### Frontend
 
-# Start development server (runs on http://localhost:3000)
-yarn dev
+- **Next.js 15** (App Router)
+- **React 19**
+- **TypeScript**
+- **DaisyUI** (Tailwind CSS 기반 UI)
+- **yarn** (패키지 매니저)
 
-# Build for production
-yarn build
+### Backend / Infra
 
-# Start production server
-yarn start
+- **Supabase** (인증, DB, 스토리지)
+- **OpenAI API** (AI 모델: gpt-4o / gpt-4o-mini)
+- **Vercel** (배포)
+- **OpenWeatherMap API** (날씨 예시: 확장 가능)
 
-# Run linter
-yarn lint
+---
+
+## 📂 폴더 구조
+
+```
+/src
+ ├─ app
+ │   ├─ layout.tsx
+ │   ├─ page.tsx
+ │   ├─ api
+ │   │   ├─ chat/route.ts         # AI 챗봇
+ │   │   ├─ text-gen/route.ts     # AI 텍스트 생성
+ │   │   ├─ file-analyze/route.ts # 파일 분석
+ │   │   ├─ todos/route.ts        # 할 일 관리 + AI 추천
+ │   │   └─ csv-analyze/route.ts  # 데이터 시각화
+ │   ├─ dashboard
+ │   │   ├─ page.tsx
+ │   │   └─ components
+ │   │       ├─ AIChat.tsx
+ │   │       ├─ TextGenerator.tsx
+ │   │       ├─ FileAnalyzer.tsx
+ │   │       ├─ TodoList.tsx
+ │   │       ├─ DataVisualizer.tsx
+ │   │       └─ Chart.tsx
+ │   └─ auth
+ │       └─ page.tsx
+ ├─ lib
+ │   ├─ supabaseClient.ts
+ │   ├─ openai.ts
+ │   ├─ fileParser.ts
+ │   └─ chartHelper.ts
+ ├─ types
+ │   ├─ chat.ts
+ │   ├─ todo.ts
+ │   └─ csv.ts
+ └─ styles
+     └─ globals.css
+
 ```
 
-## Architecture & Structure
+## 🗄 DB 스키마 (Supabase)
 
-- **Framework**: Next.js 15 with App Router
-- **Styling**: Tailwind CSS 4 with PostCSS
-- **TypeScript**: Strict configuration with path mapping (`@/*` → `./src/*`)
-- **Fonts**: Uses Geist Sans and Geist Mono from Google Fonts
-- **Structure**: Standard Next.js App Router structure under `src/app/`
+### users
 
-## Key Dependencies
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 사용자 고유 ID |
+| email | text | 이메일 |
+| name | text | 사용자 이름 |
+| created_at | timestamp | 생성일 |
 
-- `@anthropic-ai/claude-code`: Integration with Claude Code
-- Next.js 15.4.6 with React 19
-- Tailwind CSS 4 (latest version)
-- TypeScript 5 with strict configuration
+### ai_chat
 
-## Configuration Files
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 대화 ID |
+| user_id | uuid, FK | users.id |
+| role | text | 'user' 또는 'assistant' |
+| message | text | 대화 내용 |
+| created_at | timestamp | 생성일 |
 
-- **ESLint**: Modern flat config using Next.js presets
-- **TypeScript**: Strict configuration with Next.js plugin
-- **PostCSS**: Configured for Tailwind CSS 4
-- **Next.js**: Minimal configuration (mostly defaults)
+### ai_text_gen
 
-## Notes
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 생성 ID |
+| user_id | uuid, FK | users.id |
+| prompt | text | 사용자 입력 |
+| result | text | AI 생성 결과 |
+| created_at | timestamp | 생성일 |
 
-- Project appears to be in initial setup phase - only default Next.js template files exist
-- README.md contains Korean instructions for project setup
-- No custom components, APIs, or business logic implemented yet
-- Uses modern React/Next.js patterns (App Router, Server Components)
+### files
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 파일 ID |
+| user_id | uuid, FK | users.id |
+| file_name | text | 파일명 |
+| file_url | text | 파일 경로 |
+| summary | text | 요약 |
+| metadata | jsonb | 추가 메타데이터 |
+| created_at | timestamp | 생성일 |
+
+### todos
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 할 일 ID |
+| user_id | uuid, FK | users.id |
+| task | text | 할 일 내용 |
+| ai_recommended | boolean | AI 추천 여부 |
+| is_done | boolean | 완료 여부 |
+| due_date | date | 마감일 |
+| created_at | timestamp | 생성일 |
+
+### csv_analysis
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| id | uuid, PK | 분석 ID |
+| user_id | uuid, FK | users.id |
+| csv_url | text | CSV 파일 경로 |
+| analysis_text | text | 분석 내용 |
+| chart_data | jsonb | 차트 데이터 |
+| created_at | timestamp | 생성일 |
+
+## 🚀 개발 우선순위 (MVP)
+
+1. **Supabase 인증** (회원가입 / 로그인 / 로그아웃)
+2. **대시보드 기본 레이아웃 구현**
+3. **AI 챗봇 기능**
+4. **파일 업로드 + AI 분석**
+5. **TODO 리스트 + AI 추천**
+6. **CSV 업로드 + 데이터 시각화**

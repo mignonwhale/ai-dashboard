@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.notion.so)",
+      "Bash(yarn dev)",
+      "Bash(yarn add:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": []
+  }
+}
