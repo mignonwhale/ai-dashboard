@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claude 어시스턴트 대시보드",
-  description: "Claude AI를 활용한 다양한 기능을 하나의 대시보드에서 이용하세요",
+  title: "Gemini 어시스턴트 대시보드",
+  description: "Gemini AI를 활용한 다양한 기능을 하나의 대시보드에서 이용하세요",
 };
 
 export default function RootLayout({

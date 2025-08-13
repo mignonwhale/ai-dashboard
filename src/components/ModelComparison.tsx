@@ -23,8 +23,8 @@ const mockModelData: ModelStats[] = [
     status: 'active'
   },
   {
-    name: 'Claude 3.5 Sonnet',
-    provider: 'Anthropic',
+    name: 'Gemini 1.5 Pro',
+    provider: 'Google',
     responseTime: 0.9,
     accuracy: 96.2,
     cost: 0.015,
@@ -41,8 +41,8 @@ const mockModelData: ModelStats[] = [
     status: 'active'
   },
   {
-    name: 'Claude 3 Haiku',
-    provider: 'Anthropic',
+    name: 'Gemini 1.5 Flash',
+    provider: 'Google',
     responseTime: 0.5,
     accuracy: 89.1,
     cost: 0.0025,
@@ -52,7 +52,7 @@ const mockModelData: ModelStats[] = [
 ];
 
 export default function ModelComparison() {
-  const [selectedModels, setSelectedModels] = useState<string[]>(['GPT-4', 'Claude 3.5 Sonnet']);
+  const [selectedModels, setSelectedModels] = useState<string[]>(['GPT-4', 'Gemini 1.5 Pro']);
 
   const toggleModel = (modelName: string) => {
     setSelectedModels(prev => 

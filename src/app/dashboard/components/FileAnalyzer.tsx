@@ -104,28 +104,39 @@ export default function FileAnalyzer() {
       const fileExt = selectedFile.name.split('.').pop()
       const filePath = `${user.id}/${Date.now()}.${fileExt}`
       
+      // 파일 업로드 시도 (버킷이 없으면 수동으로 Supabase에서 생성 필요)
+      console.log('파일 업로드 시도 중...')
+
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('files')
         .upload(filePath, selectedFile)
 
       if (uploadError) {
         console.error('파일 업로드 실패:', uploadError)
+        // 업로드 실패해도 분석 결과는 표시
+        console.warn('파일 업로드는 실패했지만 분석은 완료되었습니다.')
       } else {
+        console.log('파일 업로드 성공:', uploadData?.path)
         // 분석 결과를 데이터베이스에 저장
-        await supabase
-          .from('files')
-          .insert([
-            {
-              user_id: user.id,
-              file_name: selectedFile.name,
-              file_url: uploadData.path,
-              summary: data.analysis,
-              metadata: { size: selectedFile.size, type: selectedFile.type }
-            }
-          ])
-        
-        // 파일 목록 새로고침
-        loadUploadedFiles()
+        try {
+          await supabase
+            .from('files')
+            .insert([
+              {
+                user_id: user.id,
+                file_name: selectedFile.name,
+                file_url: uploadData.path,
+                summary: data.analysis,
+                metadata: { size: selectedFile.size, type: selectedFile.type }
+              }
+            ])
+          
+          // 파일 목록 새로고침
+          loadUploadedFiles()
+        } catch (dbError) {
+          console.error('DB 저장 실패:', dbError)
+          // DB 저장 실패해도 분석 결과는 표시
+        }
       }
 
     } catch (error) {
@@ -390,7 +401,7 @@ export default function FileAnalyzer() {
                   </p>
                 </div>
               )}
-              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-96 overflow-y-auto">
+              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[48rem] overflow-y-auto">
                 <div className="whitespace-pre-wrap">{analysis}</div>
               </div>
             </div>

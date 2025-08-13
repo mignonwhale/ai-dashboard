@@ -27,7 +27,7 @@ const mockConversations: Conversation[] = [
   {
     id: '2',
     title: 'AI Ethics Discussion',
-    model: 'Claude 3.5 Sonnet',
+    model: 'Gemini 1.5 Pro',
     timestamp: '2024-01-15 13:15:00',
     messages: 8,
     tokens: 1890,
@@ -47,7 +47,7 @@ const mockConversations: Conversation[] = [
   {
     id: '4',
     title: 'TypeScript Advanced Patterns',
-    model: 'Claude 3 Haiku',
+    model: 'Gemini 1.5 Flash',
     timestamp: '2024-01-15 09:20:00',
     messages: 6,
     tokens: 1200,

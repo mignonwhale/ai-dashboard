@@ -6,13 +6,70 @@ import { useRouter } from 'next/navigation'
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
+  const [isPasswordReset, setIsPasswordReset] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [nameError, setNameError] = useState('')
   const router = useRouter()
+
+  // 이메일 유효성 검사
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email.trim()) {
+      return '이메일을 입력해주세요.'
+    }
+    if (!emailRegex.test(email)) {
+      return '올바른 이메일 형식을 입력해주세요.'
+    }
+    return ''
+  }
+
+  // 비밀번호 유효성 검사
+  const validatePassword = (password: string) => {
+    if (!password.trim()) {
+      return '비밀번호를 입력해주세요.'
+    }
+    if (password.length < 6) {
+      return '비밀번호는 최소 6자 이상이어야 합니다.'
+    }
+    return ''
+  }
+
+  // 이름 유효성 검사
+  const validateName = (name: string) => {
+    if (!name.trim()) {
+      return '이름을 입력해주세요.'
+    }
+    if (name.trim().length < 2) {
+      return '이름은 최소 2자 이상이어야 합니다.'
+    }
+    if (name.trim().length > 20) {
+      return '이름은 20자 이하여야 합니다.'
+    }
+    return ''
+  }
+
+  // 실시간 검증 함수들
+  const handleEmailChange = (value: string) => {
+    setEmail(value)
+    setEmailError(validateEmail(value))
+  }
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value)
+    setPasswordError(validatePassword(value))
+  }
+
+  const handleNameChange = (value: string) => {
+    setName(value)
+    setNameError(validateName(value))
+  }
 
   useEffect(() => {
     // 이미 로그인된 사용자는 대시보드로 리다이렉트
@@ -30,9 +87,20 @@ export default function AuthPage() {
     setLoading(true)
     setMessage('')
 
+    // 유효성 검사
+    const emailValidation = validateEmail(email)
+    const passwordValidation = validatePassword(password)
+
+    if (emailValidation || passwordValidation) {
+      setEmailError(emailValidation)
+      setPasswordError(passwordValidation)
+      setLoading(false)
+      return
+    }
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       })
 
@@ -53,6 +121,19 @@ export default function AuthPage() {
     setLoading(true)
     setMessage('')
 
+    // 유효성 검사
+    const nameValidation = validateName(name)
+    const emailValidation = validateEmail(email)
+    const passwordValidation = validatePassword(password)
+
+    if (nameValidation || emailValidation || passwordValidation) {
+      setNameError(nameValidation)
+      setEmailError(emailValidation)
+      setPasswordError(passwordValidation)
+      setLoading(false)
+      return
+    }
+
     // 비밀번호 확인
     if (password !== confirmPassword) {
       setMessage('비밀번호가 일치하지 않습니다.')
@@ -60,21 +141,14 @@ export default function AuthPage() {
       return
     }
 
-    // 비밀번호 길이 확인
-    if (password.length < 6) {
-      setMessage('비밀번호는 최소 6자 이상이어야 합니다.')
-      setLoading(false)
-      return
-    }
-
     try {
       // Supabase Auth에 사용자 등록
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
-            display_name: name,
+            display_name: name.trim(),
           }
         }
       })
@@ -99,6 +173,39 @@ export default function AuthPage() {
     }
   }
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
+
+    // 이메일 유효성 검사
+    const emailValidation = validateEmail(email)
+    if (emailValidation) {
+      setEmailError(emailValidation)
+      setLoading(false)
+      return
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      })
+
+      if (error) throw error
+
+      setMessage('비밀번호 재설정 이메일이 발송되었습니다. 이메일을 확인해주세요.')
+      setTimeout(() => {
+        setIsPasswordReset(false)
+        setIsLogin(true)
+      }, 3000)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+      setMessage(`비밀번호 재설정 실패: ${errorMessage}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md">
@@ -112,17 +219,17 @@ export default function AuthPage() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {isLogin ? 'AI 어시스턴트 대시보드' : 'AI 어시스턴트 가입하기'}
+              {isPasswordReset ? '비밀번호 재설정' : (isLogin ? 'AI 어시스턴트 대시보드' : 'AI 어시스턴트 가입하기')}
             </h1>
             <p className="text-gray-500 text-sm">
-              {isLogin ? '특별한 AI와 함께 생산성을 높여보세요' : 'AI와 함께하는 새로운 생산성 경험을 시작하세요'}
+              {isPasswordReset ? '등록된 이메일로 비밀번호 재설정 링크를 보내드립니다' : (isLogin ? '특별한 AI와 함께 생산성을 높여보세요' : 'AI와 함께하는 새로운 생산성 경험을 시작하세요')}
             </p>
           </div>
 
-          <form className="px-8 py-4" onSubmit={isLogin ? handleLogin : handleSignUp}>
+          <form className="px-8 py-4" onSubmit={isPasswordReset ? handlePasswordReset : (isLogin ? handleLogin : handleSignUp)}>
             
             {/* Name Field (Sign Up Only) */}
-            {!isLogin && (
+            {!isLogin && !isPasswordReset && (
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   이름
@@ -136,12 +243,17 @@ export default function AuthPage() {
                   <input 
                     type="text" 
                     placeholder="홍길동" 
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500" 
+                    className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500 ${
+                      nameError ? 'border-red-500' : 'border-gray-200'
+                    }`}
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     required 
                   />
                 </div>
+                {nameError && (
+                  <p className="mt-1 text-sm text-red-600">{nameError}</p>
+                )}
               </div>
             )}
 
@@ -159,38 +271,50 @@ export default function AuthPage() {
                 <input 
                   type="email" 
                   placeholder="example@email.com" 
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500" 
+                  className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500 ${
+                    emailError ? 'border-red-500' : 'border-gray-200'
+                  }`}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => handleEmailChange(e.target.value)}
                   required 
                 />
               </div>
+              {emailError && (
+                <p className="mt-1 text-sm text-red-600">{emailError}</p>
+              )}
             </div>
 
-            {/* Password Field */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                비밀번호
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+            {/* Password Field (not for password reset) */}
+            {!isPasswordReset && (
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  비밀번호
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500 ${
+                      passwordError ? 'border-red-500' : 'border-gray-200'
+                    }`}
+                    value={password}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    required 
+                  />
                 </div>
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors outline-none text-gray-900 placeholder-gray-500" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
+                {passwordError && (
+                  <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+                )}
               </div>
-            </div>
+            )}
 
             {/* Confirm Password Field (Sign Up Only) */}
-            {!isLogin && (
+            {!isLogin && !isPasswordReset && (
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   비밀번호 확인
@@ -214,13 +338,33 @@ export default function AuthPage() {
             )}
 
             {/* Forgot Password Link (Login Only) */}
-            {isLogin && (
+            {isLogin && !isPasswordReset && (
               <div className="text-right mb-6">
                 <button
                   type="button"
+                  onClick={() => {
+                    setIsPasswordReset(true)
+                    setIsLogin(false)
+                  }}
                   className="text-blue-600 text-sm hover:text-blue-700 transition-colors"
                 >
                   비밀번호를 잊으셨나요?
+                </button>
+              </div>
+            )}
+
+            {/* Back to Login Link (Password Reset Only) */}
+            {isPasswordReset && (
+              <div className="text-right mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPasswordReset(false)
+                    setIsLogin(true)
+                  }}
+                  className="text-blue-600 text-sm hover:text-blue-700 transition-colors"
+                >
+                  로그인으로 돌아가기
                 </button>
               </div>
             )}
@@ -240,25 +384,27 @@ export default function AuthPage() {
                   처리중...
                 </>
               ) : (
-                isLogin ? '로그인' : '회원가입'
+                isPasswordReset ? '비밀번호 재설정 이메일 발송' : (isLogin ? '로그인' : '회원가입')
               )}
             </button>
 
           </form>
 
           {/* Toggle Login/Signup */}
-          <div className="text-center pb-8">
-            <p className="text-gray-600 text-sm">
-              {isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}{' '}
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
-              >
-                {isLogin ? '회원가입' : '로그인'}
-              </button>
-            </p>
-          </div>
+          {!isPasswordReset && (
+            <div className="text-center pb-8">
+              <p className="text-gray-600 text-sm">
+                {isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
+                >
+                  {isLogin ? '회원가입' : '로그인'}
+                </button>
+              </p>
+            </div>
+          )}
 
           {/* Message */}
           {message && (

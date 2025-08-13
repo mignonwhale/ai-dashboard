@@ -66,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-foreground/70">Claude</span>
+                <span className="text-xs text-foreground/70">Gemini</span>
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               </div>
             </div>

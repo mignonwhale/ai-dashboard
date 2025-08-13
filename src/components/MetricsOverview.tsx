@@ -118,7 +118,7 @@ export default function MetricsOverview() {
           <div className="space-y-4">
             {[
               { time: '2 minutes ago', activity: 'GPT-4 API call completed', status: 'success' },
-              { time: '5 minutes ago', activity: 'Claude 3.5 Sonnet conversation started', status: 'success' },
+              { time: '5 minutes ago', activity: 'Gemini 1.5 Pro conversation started', status: 'success' },
               { time: '12 minutes ago', activity: 'Model comparison analysis completed', status: 'success' },
               { time: '1 hour ago', activity: 'API rate limit warning', status: 'warning' },
               { time: '3 hours ago', activity: 'Monthly usage report generated', status: 'info' }

@@ -11,7 +11,7 @@ export default function SettingsPanel() {
     },
     anthropic: {
       apiKey: '••••••••••••••••••••••••••••••••••••••••',
-      defaultModel: 'claude-3-5-sonnet-20241022'
+      defaultModel: 'gemini-1.5-pro'
     },
     general: {
       theme: 'system',
@@ -90,9 +90,9 @@ export default function SettingsPanel() {
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="flex items-center space-x-2 mb-4">
           <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
-            <span className="text-orange-600 font-bold">C</span>
+            <span className="text-orange-600 font-bold">G</span>
           </div>
-          <h3 className="text-lg font-semibold text-foreground">Anthropic Configuration</h3>
+          <h3 className="text-lg font-semibold text-foreground">Google Gemini Configuration</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -112,9 +112,9 @@ export default function SettingsPanel() {
               onChange={(e) => handleInputChange('anthropic', 'defaultModel', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
             >
-              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-              <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
-              <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
             </select>
           </div>
         </div>

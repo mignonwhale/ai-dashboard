@@ -9,7 +9,10 @@
       "Bash(yarn build)",
       "Bash(curl:*)",
       "Bash(yarn remove:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(node:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

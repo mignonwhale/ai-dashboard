@@ -153,7 +153,7 @@ export default function DataVisualizer() {
         },
         title: {
           display: true,
-          text: '데이터 시각화',
+          text: selectedFile ? `${selectedFile.name} 데이터 시각화` : '데이터 시각화',
         },
       },
     }
@@ -176,27 +176,34 @@ export default function DataVisualizer() {
       'rgba(255, 159, 64, 1)',
     ]
 
-    // 예시 데이터 (실제로는 API에서 파싱된 데이터를 사용)
-    const sampleData = {
-      labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
-      datasets: [
-        {
-          label: '매출 (만원)',
-          data: [120, 190, 300, 500, 200, 300],
-          backgroundColor: selectedChartType === 'pie' ? colors : colors[0],
-          borderColor: selectedChartType === 'pie' ? borderColors : borderColors[0],
-          borderWidth: 1,
-        },
-      ],
+    // API에서 파싱된 실제 데이터를 사용하거나, 없으면 예시 데이터 사용
+    let displayData
+    if (chartData && typeof chartData === 'object' && 'labels' in chartData && 'datasets' in chartData) {
+      // 실제 CSV에서 파싱된 데이터 사용
+      displayData = chartData
+    } else {
+      // 예시 데이터 (CSV 파싱이 구현되지 않았거나 실패한 경우)
+      displayData = {
+        labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+        datasets: [
+          {
+            label: `${selectedFile?.name || '데이터'} (예시)`,
+            data: [120, 190, 300, 500, 200, 300],
+            backgroundColor: selectedChartType === 'pie' ? colors : colors[0],
+            borderColor: selectedChartType === 'pie' ? borderColors : borderColors[0],
+            borderWidth: 1,
+          },
+        ],
+      }
     }
 
     switch (selectedChartType) {
       case 'line':
-        return <Line data={sampleData} options={commonOptions} />
+        return <Line data={displayData} options={commonOptions} />
       case 'pie':
-        return <Pie data={sampleData} options={commonOptions} />
+        return <Pie data={displayData} options={commonOptions} />
       default:
-        return <Bar data={sampleData} options={commonOptions} />
+        return <Bar data={displayData} options={commonOptions} />
     }
   }
 
@@ -421,7 +428,7 @@ export default function DataVisualizer() {
                 <div>
                   <h4 className="font-medium text-blue-800 mb-2">시각화 기능</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• Claude AI 데이터 분석</li>
+                    <li>• Gemini AI 데이터 분석</li>
                     <li>• 3가지 차트 타입 지원</li>
                     <li>• 인터랙티브 차트</li>
                     <li>• 인사이트 및 패턴 분석</li>

@@ -9,6 +9,10 @@ export default function Dashboard() {
   const { user, loading } = useAuth()
   const router = useRouter()
 
+  const navigateToFeature = (feature: string) => {
+    router.push(`/dashboard/${feature}`)
+  }
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/auth')
@@ -45,7 +49,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {/* AI 챗봇 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-               onClick={() => (document.querySelector('[data-tab="chat"]') as HTMLElement)?.click()}>
+               onClick={() => navigateToFeature('chat')}>
             <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +63,7 @@ export default function Dashboard() {
 
           {/* AI 텍스트 생성 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-               onClick={() => (document.querySelector('[data-tab="text-gen"]') as HTMLElement)?.click()}>
+               onClick={() => navigateToFeature('text-gen')}>
             <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-pink-500 rounded-xl flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +77,7 @@ export default function Dashboard() {
 
           {/* 파일 분석 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-               onClick={() => (document.querySelector('[data-tab="file-analyzer"]') as HTMLElement)?.click()}>
+               onClick={() => navigateToFeature('file-analyzer')}>
             <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +91,7 @@ export default function Dashboard() {
 
           {/* 할 일 관리 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-               onClick={() => (document.querySelector('[data-tab="todo"]') as HTMLElement)?.click()}>
+               onClick={() => navigateToFeature('todos')}>
             <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +105,7 @@ export default function Dashboard() {
 
           {/* 데이터 시각화 */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer col-span-1 md:col-span-2"
-               onClick={() => (document.querySelector('[data-tab="data-viz"]') as HTMLElement)?.click()}>
+               onClick={() => navigateToFeature('data-viz')}>
             <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +133,7 @@ export default function Dashboard() {
           </p>
           <button 
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-colors"
-            onClick={() => (document.querySelector('[data-tab="chat"]') as HTMLElement)?.click()}
+            onClick={() => navigateToFeature('chat')}
           >
             시작하기
           </button>

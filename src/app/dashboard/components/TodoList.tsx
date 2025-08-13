@@ -215,7 +215,7 @@ export default function TodoList() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Claude AI 추천</h3>
+                  <h3 className="font-semibold text-gray-900">Gemini AI 추천</h3>
                   <p className="text-sm text-gray-500">현재 할 일을 바탕으로 추가 작업을 추천받아보세요</p>
                 </div>
               </div>
@@ -291,7 +291,7 @@ export default function TodoList() {
                         <div className="flex items-center gap-2 mt-1">
                           {todo.ai_recommended && (
                             <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                              Claude 추천
+                              Gemini 추천
                             </span>
                           )}
                           <span className="text-xs text-gray-500">
@@ -359,7 +359,7 @@ export default function TodoList() {
                 <h3 className="text-sm font-semibold text-yellow-800 mb-2">사용 팁</h3>
                 <ul className="text-xs text-yellow-700 space-y-1">
                   <li>• 구체적이고 실행 가능한 할 일을 작성하세요</li>
-                  <li>• Claude AI 추천으로 놓친 작업을 찾아보세요</li>
+                  <li>• Gemini AI 추천으로 놓친 작업을 찾아보세요</li>
                   <li>• 정기적으로 완료된 할 일을 정리하세요</li>
                   <li>• 큰 작업은 작은 단위로 나누어 관리하세요</li>
                 </ul>

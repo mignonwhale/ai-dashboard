@@ -77,6 +77,19 @@ export default function TextGenerator() {
     setGeneratedText('')
   }
 
+  const getPlaceholderText = () => {
+    switch (textType) {
+      case 'blog':
+        return '생성된 블로그 글이 여기에 표시됩니다'
+      case 'marketing':
+        return '생성된 마케팅 문구가 여기에 표시됩니다'
+      case 'general':
+        return '생성된 텍스트가 여기에 표시됩니다'
+      default:
+        return '생성된 텍스트가 여기에 표시됩니다'
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto">
       {/* 헤더 */}
@@ -226,7 +239,7 @@ export default function TextGenerator() {
               <div className="flex items-center justify-center h-96">
                 <div className="text-center">
                   <div className="animate-spin w-8 h-8 border-4 border-purple-200 border-t-purple-500 rounded-full mx-auto mb-4"></div>
-                  <p className="text-gray-500">생성된 블로그 글이 여기에 표시됩니다</p>
+                  <p className="text-gray-500">{getPlaceholderText()}</p>
                 </div>
               </div>
             ) : generatedText ? (
@@ -243,7 +256,7 @@ export default function TextGenerator() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <p className="font-medium">생성된 블로그 글이 여기에 표시됩니다</p>
+                  <p className="font-medium">{getPlaceholderText()}</p>
                 </div>
               </div>
             )}
