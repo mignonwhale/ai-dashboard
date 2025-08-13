@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { recommendTodos } from '@/lib/claude'
+import { recommendTodos } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
   try {
-    const { existingTodos, userContext } = await request.json()
+    const { existingTodos } = await request.json()
 
     if (!Array.isArray(existingTodos)) {
       return NextResponse.json(
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const recommendations = await recommendTodos(existingTodos, userContext)
+    const recommendations = await recommendTodos(existingTodos)
 
     return NextResponse.json({ recommendations })
   } catch (error) {

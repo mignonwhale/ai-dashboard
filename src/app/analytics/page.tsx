@@ -15,7 +15,7 @@ export default function AnalyticsPage() {
           <div className="text-6xl mb-4">📊</div>
           <h3 className="text-xl font-semibold text-foreground mb-2">Analytics Coming Soon</h3>
           <p className="text-foreground/60 max-w-md mx-auto">
-            We're working on advanced analytics features including usage trends, 
+            We&apos;re working on advanced analytics features including usage trends, 
             cost optimization insights, and performance benchmarking.
           </p>
         </div>

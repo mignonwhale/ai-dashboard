@@ -4,7 +4,12 @@
       "WebFetch(domain:www.notion.so)",
       "Bash(yarn dev)",
       "Bash(yarn add:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(yarn lint)",
+      "Bash(yarn build)",
+      "Bash(curl:*)",
+      "Bash(yarn remove:*)",
+      "Bash(lsof:*)"
     ],
     "deny": []
   }

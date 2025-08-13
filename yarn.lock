@@ -51,15 +51,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anthropic-ai/sdk@npm:^0.59.0":
-  version: 0.59.0
-  resolution: "@anthropic-ai/sdk@npm:0.59.0"
-  bin:
-    anthropic-ai-sdk: bin/cli
-  checksum: 10c0/5d74b2a37697ab93ea34299a72a06968ef38fa96b2132512396ac2c8d97849d0912358648d368c78b033b83da6bab8fa094ecfa35532b9707fbdd0fd921c3bb0
-  languageName: node
-  linkType: hard
-
 "@emnapi/core@npm:^1.4.3":
   version: 1.4.5
   resolution: "@emnapi/core@npm:1.4.5"
@@ -171,6 +162,13 @@ __metadata:
     "@eslint/core": "npm:^0.15.2"
     levn: "npm:^0.4.1"
   checksum: 10c0/c178c1b58c574200c0fd125af3e4bc775daba7ce434ba6d1eeaf9bcb64b2e9fea75efabffb3ed3ab28858e55a016a5efa95f509994ee4341b341199ca630b89e
+  languageName: node
+  linkType: hard
+
+"@google/generative-ai@npm:^0.24.1":
+  version: 0.24.1
+  resolution: "@google/generative-ai@npm:0.24.1"
+  checksum: 10c0/8da77fc648b04fc2ecef53e75230e2ee67a8fd29a34b6b8874e77a7332b2a1e4b51d44dd9eb604fb063ed8ea46d293aac5b1e2a955ae2435e2582a265f2cb80d
   languageName: node
   linkType: hard
 
@@ -1064,6 +1062,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pdf-parse@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@types/pdf-parse@npm:1.1.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/68989815ca9b6321eb5ab47437edf58d4f8291d4857b4bad0d7dedf1f4535da9918bc1113f7f59763c238f35175b080d3dfa76c5f26eeeb091ac4b6604028d2e
+  languageName: node
+  linkType: hard
+
 "@types/phoenix@npm:^1.6.6":
   version: 1.6.6
   resolution: "@types/phoenix@npm:1.6.6"
@@ -1428,12 +1435,13 @@ __metadata:
   resolution: "ai-dashboard@workspace:."
   dependencies:
     "@anthropic-ai/claude-code": "npm:^1.0.72"
-    "@anthropic-ai/sdk": "npm:^0.59.0"
     "@eslint/eslintrc": "npm:^3"
+    "@google/generative-ai": "npm:^0.24.1"
     "@supabase/supabase-js": "npm:^2.54.0"
     "@tailwindcss/postcss": "npm:^4.1.11"
     "@types/multer": "npm:^2"
     "@types/node": "npm:^20"
+    "@types/pdf-parse": "npm:^1.1.5"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     autoprefixer: "npm:^10.4.21"
@@ -1444,7 +1452,6 @@ __metadata:
     eslint-config-next: "npm:15.4.6"
     multer: "npm:^2.0.2"
     next: "npm:15.4.6"
-    openai: "npm:^5.12.2"
     pdf-parse: "npm:^1.1.1"
     postcss: "npm:^8.5.6"
     react: "npm:19.1.0"
@@ -3676,23 +3683,6 @@ __metadata:
     define-properties: "npm:^1.2.1"
     es-object-atoms: "npm:^1.0.0"
   checksum: 10c0/3c47814fdc64842ae3d5a74bc9d06bdd8d21563c04d9939bf6716a9c00596a4ebc342552f8934013d1ec991c74e3671b26710a0c51815f0b603795605ab6b2c9
-  languageName: node
-  linkType: hard
-
-"openai@npm:^5.12.2":
-  version: 5.12.2
-  resolution: "openai@npm:5.12.2"
-  peerDependencies:
-    ws: ^8.18.0
-    zod: ^3.23.8
-  peerDependenciesMeta:
-    ws:
-      optional: true
-    zod:
-      optional: true
-  bin:
-    openai: bin/cli
-  checksum: 10c0/7737b9b24edc81fcf9e6dcfb18a196cc0f8e29b6e839adf06a2538558c03908e3aa4cd94901b1a7f4a9dd62676fe9e34d6202281b2395090d998618ea1614c0c
   languageName: node
   linkType: hard
 

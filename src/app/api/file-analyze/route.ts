@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseFile } from '@/lib/fileParser'
-import { analyzeFile } from '@/lib/claude'
+import { analyzeFile } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // AI 분석
+    // AI 분석 (요약)
     const analysis = await analyzeFile(content, file.name)
 
     return NextResponse.json({ analysis })

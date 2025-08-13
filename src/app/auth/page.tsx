@@ -31,7 +31,7 @@ export default function AuthPage() {
     setMessage('')
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -40,8 +40,9 @@ export default function AuthPage() {
 
       setMessage('로그인 성공!')
       router.push('/dashboard')
-    } catch (error: any) {
-      setMessage(`로그인 실패: ${error.message}`)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+      setMessage(`로그인 실패: ${errorMessage}`)
     } finally {
       setLoading(false)
     }
@@ -89,9 +90,10 @@ export default function AuthPage() {
           router.push('/dashboard')
         }, 1000)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('회원가입 에러:', error)
-      setMessage(`회원가입 실패: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+      setMessage(`회원가입 실패: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

@@ -35,7 +35,7 @@ export interface FileAnalysis {
   file_name: string
   file_url: string
   summary: string
-  metadata: any
+  metadata: { size?: number; type?: string } | null
   created_at: string
 }
 
@@ -54,6 +54,6 @@ export interface CSVAnalysis {
   user_id: string
   csv_url: string
   analysis_text: string
-  chart_data: any
+  chart_data: Record<string, unknown> | null
   created_at: string
 }

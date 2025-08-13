@@ -1,4 +1,7 @@
-# AI 어시스턴트 대시보드
+# 개발 진행 규칙
+- 소스를 고치기 전에 무조건 테스트부터 한다. 
+
+# AI 어시스턴트 대시보드 요구사항
 
 ## 📌 프로젝트 개요
 
@@ -34,7 +37,7 @@ AI 어시스턴트 대시보드는 다양한 AI 기능을 하나의 웹 대시�
 ### Backend / Infra
 
 - **Supabase** (인증, DB, 스토리지)
-- **OpenAI API** (AI 모델: gpt-4o / gpt-4o-mini)
+- **Google Gemini API** (AI 모델 - Gemini 1.5 Flash)
 - **Vercel** (배포)
 - **OpenWeatherMap API** (날씨 예시: 확장 가능)
 
@@ -66,7 +69,7 @@ AI 어시스턴트 대시보드는 다양한 AI 기능을 하나의 웹 대시�
  │       └─ page.tsx
  ├─ lib
  │   ├─ supabaseClient.ts
- │   ├─ openai.ts
+ │   ├─ gemini.ts
  │   ├─ fileParser.ts
  │   └─ chartHelper.ts
  ├─ types

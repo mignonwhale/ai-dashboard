@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -22,15 +22,7 @@ export default function AIChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  useEffect(() => {
-    loadChatHistory()
-  }, [user])
-
-  const loadChatHistory = async () => {
+  const loadChatHistory = useCallback(async () => {
     if (!user) return
 
     try {
@@ -54,7 +46,15 @@ export default function AIChat() {
     } catch (error) {
       console.error('채팅 기록 로드 실패:', error)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  useEffect(() => {
+    loadChatHistory()
+  }, [loadChatHistory])
 
   const saveChatMessage = async (role: 'user' | 'assistant', message: string) => {
     if (!user) return

@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface DashboardLayoutProps {
@@ -11,7 +11,6 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, signOut } = useAuth()
   const router = useRouter()
-  const pathname = usePathname()
   const [activeTab, setActiveTab] = useState('home')
 
   const handleSignOut = async () => {
@@ -133,8 +132,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">홍길동</p>
-              <p className="text-xs text-gray-500 truncate">user@example.com</p>
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.user_metadata?.display_name || '사용자'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
             <button
               onClick={handleSignOut}

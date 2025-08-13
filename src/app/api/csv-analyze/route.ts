@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { analyzeCSV } from '@/lib/claude'
+import { analyzeCSV } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,12 +39,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // AI 분석
-    const analysis = await analyzeCSV(content, file.name)
-
     // 간단한 차트 데이터 생성 (실제로는 CSV 파싱 후 구조화된 데이터 반환)
     const lines = content.split('\n').filter(line => line.trim())
     const headers = lines[0]?.split(',') || []
+
+    // AI 분석 - CSV 데이터 요약
+    const csvSummary = `CSV 파일: ${file.name}\n헤더: ${headers.join(', ')}\n데이터 행 수: ${lines.length - 1}개\n\n데이터 샘플:\n${lines.slice(0, 5).join('\n')}`
+    const analysis = await analyzeCSV(csvSummary, file.name)
     
     const chartData = {
       headers: headers,
