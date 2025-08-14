@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabaseClient'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function TextGenerator() {
   const { user } = useAuth()
@@ -244,8 +246,26 @@ export default function TextGenerator() {
               </div>
             ) : generatedText ? (
               <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                  {generatedText}
+                <div className="text-gray-800 leading-relaxed">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                    p: ({children}) => <p className="mb-4 last:mb-0">{children}</p>,
+                    h1: ({children}) => <h1 className="text-2xl font-bold mb-4 text-gray-900">{children}</h1>,
+                    h2: ({children}) => <h2 className="text-xl font-bold mb-3 text-gray-900">{children}</h2>,
+                    h3: ({children}) => <h3 className="text-lg font-bold mb-2 text-gray-900">{children}</h3>,
+                    code: ({children}) => <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">{children}</code>,
+                    pre: ({children}) => <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">{children}</pre>,
+                    ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-1">{children}</ul>,
+                    ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-1">{children}</ol>,
+                    li: ({children}) => <li className="mb-1">{children}</li>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 italic bg-blue-50 py-2 my-4">{children}</blockquote>,
+                    strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
+                    em: ({children}) => <em className="italic">{children}</em>,
+                  }}
+                  >
+                    {generatedText}
+                  </ReactMarkdown>
                 </div>
               </div>
             ) : (

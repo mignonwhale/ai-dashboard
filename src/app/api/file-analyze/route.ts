@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseFile } from '@/lib/fileParser'
 import { analyzeFile } from '@/lib/gemini'
+import { rateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
+  // Rate limiting 체크 (파일 분석은 더 적은 제한)
+  if (!rateLimit(request, 5, 60000)) { // 1분당 5회 제한
+    return NextResponse.json(
+      { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+      { status: 429 }
+    )
+  }
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File

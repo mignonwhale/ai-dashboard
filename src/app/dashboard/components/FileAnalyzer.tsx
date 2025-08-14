@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabaseClient'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface FileData {
   id: string
@@ -402,7 +404,26 @@ export default function FileAnalyzer() {
                 </div>
               )}
               <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[48rem] overflow-y-auto">
-                <div className="whitespace-pre-wrap">{analysis}</div>
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                      h1: ({children}) => <h1 className="text-lg font-bold mb-3 text-gray-900">{children}</h1>,
+                      h2: ({children}) => <h2 className="text-base font-bold mb-2 text-gray-900">{children}</h2>,
+                      h3: ({children}) => <h3 className="text-sm font-bold mb-2 text-gray-900">{children}</h3>,
+                      code: ({children}) => <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
+                      pre: ({children}) => <pre className="bg-gray-200 p-3 rounded overflow-x-auto text-xs">{children}</pre>,
+                      ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                      ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
+                      li: ({children}) => <li className="mb-1">{children}</li>,
+                      blockquote: ({children}) => <blockquote className="border-l-3 border-blue-400 pl-3 italic bg-blue-50 py-2 my-3">{children}</blockquote>,
+                      strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
+                    }}
+                  >
+                    {analysis}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           )}

@@ -2,8 +2,13 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import DashboardLayout from '@/app/dashboard/components/DashboardLayout'
+import { useEffect, Suspense } from 'react'
+import dynamic from 'next/dynamic'
+import LoadingSpinner from '@/components/LoadingSpinner'
+
+const DashboardLayout = dynamic(() => import('@/app/dashboard/components/DashboardLayout'), {
+  loading: () => <LoadingSpinner />
+})
 
 export default function Dashboard() {
   const { user, loading } = useAuth()
