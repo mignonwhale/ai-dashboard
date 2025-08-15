@@ -110,7 +110,16 @@ describe('AI 챗봇 기능', () => {
     cy.get('button[class*="bg-purple-600"]').click()
     
     // 전송된 메시지가 화면에 표시되는지 확인
-    cy.contains(testMessage, { timeout: 5000 }).should('be.visible')
+    // 스크롤 가능한 컨테이너 내에서 존재 여부 확인
+    cy.get('[data-testid="chat-messages"], .space-y-4').within(() => {
+      cy.contains(testMessage, { timeout: 5000 }).should('exist')
+    })
+    
+    // AI 응답 대기 (로딩 상태 확인)
+    cy.get('.animate-bounce', { timeout: 10000 }).should('exist') // 로딩 애니메이션 확인
+    
+    // AI 응답이 도착하면 로딩 상태가 사라짐
+    cy.get('.animate-bounce', { timeout: 15000 }).should('not.exist')
     
     cy.log('AI 챗봇 기능 테스트 완료')
   })

@@ -15,8 +15,16 @@ describe('홈페이지 테스트', () => {
   })
 
   it('로그인 페이지로 이동할 수 있다', () => {
-    // auth 링크가 있는지 확인하고 클릭
-    cy.contains('로그인').click()
+    // auth 링크나 버튼이 있는지 확인하고 클릭
+    cy.get('a[href="/auth"], button').contains('로그인').click()
     cy.url().should('include', '/auth')
+  })
+
+  it('네비게이션 요소들이 존재한다', () => {
+    // 기본적인 네비게이션 요소들 확인
+    cy.get('nav, header, .navbar').should('exist')
+    
+    // 로고나 사이트 제목 확인
+    cy.get('h1, .logo, [data-cy="site-title"]').should('exist')
   })
 })

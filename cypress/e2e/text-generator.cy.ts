@@ -35,6 +35,22 @@ describe('AI 텍스트 생성기', () => {
     
     // 에러 메시지나 validation 확인
     cy.get('textarea:invalid, input:invalid').should('exist')
-      .or('contain.text', '입력')
+    cy.contains('입력해', { timeout: 5000 }).should('be.visible')
+      .or('contain.text', '필수')
+      .or('contain.text', '비어')
+  })
+
+  it('생성된 텍스트를 복사할 수 있다', () => {
+    const testPrompt = '간단한 인사말 작성해줘'
+    
+    // 프롬프트 입력 및 생성
+    cy.get('textarea, input').first().type(testPrompt)
+    cy.get('button').contains('생성').click()
+    
+    // 생성 완료 대기
+    cy.get('[data-cy="generated-text"], .result', { timeout: 30000 }).should('be.visible')
+    
+    // 복사 버튼이 있는지 확인
+    cy.get('button').contains('복사').should('be.visible')
   })
 })

@@ -3,8 +3,10 @@ import { analyzeCSV } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('CSV 분석 API 호출됨')
     const formData = await request.formData()
     const file = formData.get('file') as File
+    console.log('업로드된 파일:', file?.name, '크기:', file?.size)
 
     if (!file) {
       return NextResponse.json(

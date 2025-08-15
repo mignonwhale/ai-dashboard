@@ -36,7 +36,11 @@ yarn dev
 
 이제 브라우저에서 http://localhost:3000으로 접속하여 결과물을 확인할 수 있습니다.
 
-
+## yarn 최초 설치 시
+1. choco로 nvm 설치
+2. nvm으로 node 최신버전 설치
+3. `corepack enable` 실행
+4. yarn은 글로벌이 없으므로 해당 프로젝트에서 시작하면 된다.
 
 ## 클로드코드CLI 세팅
 

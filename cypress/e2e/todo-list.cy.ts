@@ -76,6 +76,23 @@ describe('할 일 관리 기능', () => {
     
     // 에러 메시지나 validation 확인
     cy.get('input:invalid, textarea:invalid').should('exist')
-      .or('contain.text', '입력')
+    cy.contains('입력해', { timeout: 5000 }).should('be.visible')
+      .or('contain.text', '비어')
+      .or('contain.text', '필수')
+  })
+
+  it('할 일 목록이 지속적으로 저장된다', () => {
+    const testTodo = '지속성 테스트 항목'
+    
+    // 할 일 추가
+    cy.get('input[placeholder*="할 일"], textarea[placeholder*="할 일"]').type(testTodo)
+    cy.get('button').contains('추가').click()
+    cy.contains(testTodo).should('be.visible')
+    
+    // 페이지 새로고침
+    cy.reload()
+    
+    // 추가한 할 일이 여전히 있는지 확인
+    cy.contains(testTodo, { timeout: 10000 }).should('be.visible')
   })
 })

@@ -51,4 +51,28 @@ describe('파일 분석 기능', () => {
     cy.contains('크기', { timeout: 5000 }).should('be.visible')
       .or('contain.text', '10MB')
   })
+
+  it('유효한 파일 업로드 시 분석 진행', () => {
+    // 테스트용 텍스트 파일 생성
+    const testFile = new File(['이것은 테스트 파일입니다.\n분석할 내용이 들어있습니다.'], 'test.txt', { 
+      type: 'text/plain' 
+    })
+    
+    cy.get('input[type="file"]').then(input => {
+      const dt = new DataTransfer()
+      dt.items.add(testFile)
+      ;(input[0] as HTMLInputElement).files = dt.files
+      input.trigger('change')
+    })
+    
+    // 파일 업로드 후 분석 버튼이 나타나는지 확인
+    cy.get('button').contains('분석', { timeout: 10000 }).should('be.visible').click()
+    
+    // 분석 중 상태 확인
+    cy.get('.loading, [data-loading="true"]').should('exist')
+    
+    // 분석 결과 확인 (최대 30초 대기)
+    cy.get('[data-cy="analysis-result"], .analysis-result', { timeout: 30000 })
+      .should('be.visible')
+  })
 })
