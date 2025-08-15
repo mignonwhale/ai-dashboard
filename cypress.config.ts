@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://localhost:3006', // 현재 개발 서버 포트
+    baseUrl: 'http://localhost:3002', // 현재 개발 서버 포트
     viewportWidth: 1280,
     viewportHeight: 720,
     video: false,

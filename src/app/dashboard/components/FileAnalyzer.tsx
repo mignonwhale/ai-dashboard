@@ -24,6 +24,7 @@ export default function FileAnalyzer() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedFileData, setSelectedFileData] = useState<FileData | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [fileError, setFileError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const loadUploadedFiles = useCallback(async () => {
@@ -52,6 +53,17 @@ export default function FileAnalyzer() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      if (file.type !== 'application/pdf') {
+        setFileError('지원되지 않는 파일 형식입니다. PDF 파일만 업로드 가능합니다.')
+        setSelectedFile(null)
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setFileError('파일 크기가 너무 큽니다. 10MB 이하의 파일만 업로드 가능합니다.')
+        setSelectedFile(null)
+        return
+      }
+      setFileError('')
       setSelectedFile(file)
       setAnalysis('')
     }
@@ -76,8 +88,20 @@ export default function FileAnalyzer() {
     setIsDragging(false)
     
     const files = e.dataTransfer.files
-    if (files.length > 0 && files[0].type === 'application/pdf') {
-      setSelectedFile(files[0])
+    if (files.length > 0) {
+      const file = files[0]
+      if (file.type !== 'application/pdf') {
+        setFileError('지원되지 않는 파일 형식입니다. PDF 파일만 업로드 가능합니다.')
+        setSelectedFile(null)
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setFileError('파일 크기가 너무 큽니다. 10MB 이하의 파일만 업로드 가능합니다.')
+        setSelectedFile(null)
+        return
+      }
+      setFileError('')
+      setSelectedFile(file)
       setAnalysis('')
     }
   }
@@ -244,6 +268,19 @@ export default function FileAnalyzer() {
               />
             </div>
 
+            {fileError && (
+              <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-red-700 font-medium">{fileError}</p>
+                </div>
+              </div>
+            )}
+
             {selectedFile && (
               <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
                 <div className="flex items-center justify-between">
@@ -262,6 +299,7 @@ export default function FileAnalyzer() {
                     onClick={analyzeFile}
                     disabled={isLoading}
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    data-testid="analyze-button"
                   >
                     {isLoading ? '분석 중...' : '파일 분석'}
                   </button>

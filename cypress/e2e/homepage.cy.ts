@@ -20,11 +20,17 @@ describe('홈페이지 테스트', () => {
     cy.url().should('include', '/auth')
   })
 
-  it('네비게이션 요소들이 존재한다', () => {
-    // 기본적인 네비게이션 요소들 확인
-    cy.get('nav, header, .navbar').should('exist')
+  it('메인 콘텐츠 요소들이 존재한다', () => {
+    // 메인 제목 확인
+    cy.get('h1').should('contain', 'AI 어시스턴트 대시보드')
     
-    // 로고나 사이트 제목 확인
-    cy.get('h1, .logo, [data-cy="site-title"]').should('exist')
+    // 설명 텍스트 확인
+    cy.contains('Gemini AI를 활용한').should('exist')
+    
+    // 로그인 버튼 확인
+    cy.get('a[href="/auth"]').should('contain', '로그인')
+    
+    // 대시보드 미리보기 버튼 확인
+    cy.get('a[href="/dashboard"]').should('contain', '대시보드')
   })
 })

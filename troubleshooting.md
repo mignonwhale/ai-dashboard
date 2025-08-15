@@ -181,3 +181,163 @@ if (!testEmail) {
   return
 }
 ```
+
+## 최근 수정 사항 (2025-08-15)
+
+### 5. 파일 분석 테스트 - 버튼 셀렉터 문제
+
+**문제**: 특정 버튼을 찾지 못하는 에러
+```
+Expected to find content: '분석 중...' within the element: button.p-2.text-gray-400.hover:text-red-600.rounded-lg but never did.
+```
+
+**원인**: 
+- 페이지에 여러 버튼이 있어서 잘못된 버튼(삭제 버튼)을 찾음
+- `cy.get('button').contains('생성')` 같은 모호한 셀렉터 사용
+
+**해결방법**:
+```typescript
+// ❌ 모호한 셀렉터
+cy.get('button').contains('파일 분석').click()
+cy.get('button').contains('분석 중...').should('exist')
+
+// ✅ data-testid 사용
+cy.get('[data-testid="analyze-button"]').click()
+cy.get('[data-testid="analyze-button"]').should('contain', '분석 중...')
+```
+
+### 6. 텍스트 생성기 테스트 - 빈 프롬프트 validation
+
+**문제**: HTML5 validation을 기대했지만 실제로는 버튼 비활성화로 구현됨
+```
+Expected to find element: textarea:invalid, input:invalid, but never found it.
+```
+
+**원인**: 
+- `disabled={!prompt.trim() || isLoading}` 로직으로 버튼 비활성화
+- HTML5 validation 대신 JavaScript validation 사용
+
+**해결방법**:
+```typescript
+// ❌ HTML5 validation 기대
+cy.get('input:invalid, textarea:invalid').should('exist')
+
+// ✅ 버튼 비활성화 확인
+cy.get('[data-testid="generate-button"]').should('be.disabled')
+
+// 텍스트 입력 후 활성화 확인
+cy.get('input').type('테스트')
+cy.get('[data-testid="generate-button"]').should('not.be.disabled')
+```
+
+### 7. Todo 리스트 테스트 - 체크박스 찾기 실패
+
+**문제**: 할 일 완료 체크박스를 찾을 수 없음
+```
+Expected to find element: input[type="checkbox"], but never found it.
+```
+
+**원인**: 
+- `cy.contains(newTodo).parent()` 가 텍스트 컨테이너만 반환
+- 체크박스는 다른 형제 요소에 위치
+
+**해결방법**:
+```typescript
+// ❌ 잘못된 DOM 탐색
+cy.contains(newTodo).parent().within(() => {
+  cy.get('input[type="checkbox"]').check()
+})
+
+// ✅ 올바른 DOM 탐색
+cy.contains(newTodo).closest('[data-testid="todo-item"], [data-testid="ai-recommended-todo"]').within(() => {
+  cy.get('input[type="checkbox"]').check()
+})
+```
+
+### 8. AI 추천 기능 테스트 - 이전 데이터로 통과
+
+**문제**: 이틀 전 AI 추천 데이터로 테스트가 통과해버림
+
+**원인**: 
+- 단순히 AI 추천 요소 존재만 확인
+- 실제로 새로 추가되었는지 검증 부족
+
+**해결방법**:
+```typescript
+// AI 추천 전 개수 저장
+let initialTodoCount = 0
+let initialAiRecommendedCount = 0
+
+cy.get('[data-testid="todo-item"], [data-testid="ai-recommended-todo"]').then(($todos) => {
+  initialTodoCount = $todos.length
+})
+
+cy.get('[data-testid="ai-recommended-todo"]').then(($aiTodos) => {
+  initialAiRecommendedCount = $aiTodos.length
+})
+
+// AI 추천 실행
+cy.get('[data-testid="ai-recommend-button"]').click()
+cy.get('[data-testid="ai-recommend-button"]').should('contain', 'AI 추천 받기', { timeout: 30000 })
+
+// 실제 증가 확인
+cy.get('[data-testid="ai-recommended-todo"]').then(($newAiTodos) => {
+  const newAiRecommendedCount = $newAiTodos.length
+  expect(newAiRecommendedCount).to.be.greaterThan(initialAiRecommendedCount)
+})
+```
+
+### 9. Cypress should() vs then() 오류
+
+**문제**: should() 콜백 내부에서 cy.log() 사용 시 에러
+```
+cy.should() failed because you invoked a command inside the callback.
+```
+
+**원인**: 
+- `cy.should()` 는 자동 재시도를 위해 콜백을 여러 번 실행
+- 내부에서 Cypress 커맨드 사용 시 중복 실행 문제
+
+**해결방법**:
+```typescript
+// ❌ should() 내부에서 커맨드 사용
+cy.get('[data-testid="todo-item"]').should(($todos) => {
+  cy.log(`할 일 개수: ${$todos.length}개`)  // 에러!
+  expect($todos.length).to.be.greaterThan(0)
+})
+
+// ✅ then() 사용
+cy.get('[data-testid="todo-item"]').then(($todos) => {
+  cy.log(`할 일 개수: ${$todos.length}개`)  // 정상
+  expect($todos.length).to.be.greaterThan(0)
+})
+```
+
+### 10. 파일 형식 검증 로직 누락
+
+**문제**: 지원되지 않는 파일 형식 에러 메시지를 찾을 수 없음
+
+**원인**: FileAnalyzer 컴포넌트에 파일 형식 검증 로직이 없었음
+
+**해결방법**:
+```typescript
+// 컴포넌트에 validation 로직 추가
+const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0]
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      setFileError('지원되지 않는 파일 형식입니다. PDF 파일만 업로드 가능합니다.')
+      setSelectedFile(null)
+      return
+    }
+    // ...
+  }
+}
+
+// UI에 에러 메시지 표시
+{fileError && (
+  <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+    <p className="text-red-700 font-medium">{fileError}</p>
+  </div>
+)}
+```

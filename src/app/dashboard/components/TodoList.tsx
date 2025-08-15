@@ -187,11 +187,13 @@ export default function TodoList() {
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
                 onKeyPress={handleKeyPress}
+                data-testid="todo-input"
               />
               <button
                 onClick={addTodo}
                 disabled={!newTodo.trim() || isLoading}
                 className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2"
+                data-testid="add-todo-button"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -223,6 +225,7 @@ export default function TodoList() {
                 onClick={getAIRecommendations}
                 disabled={isLoadingRecommendations}
                 className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2"
+                data-testid="ai-recommend-button"
               >
                 {isLoadingRecommendations ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -271,6 +274,7 @@ export default function TodoList() {
                       className={`flex items-center gap-4 p-4 rounded-xl transition-colors ${
                         todo.is_done ? 'bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
                       }`}
+                      data-testid={todo.ai_recommended ? "ai-recommended-todo" : "todo-item"}
                     >
                       <div className="flex items-center">
                         <input

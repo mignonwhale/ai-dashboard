@@ -203,6 +203,7 @@ export default function TextGenerator() {
                 onClick={generateText}
                 disabled={!prompt.trim() || isLoading}
                 className="flex-[2] bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-medium py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                data-testid="generate-button"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -227,6 +228,7 @@ export default function TextGenerator() {
               <button
                 onClick={copyToClipboard}
                 className="text-gray-500 hover:text-gray-700 text-sm flex items-center gap-2"
+                data-testid="copy-button"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -236,7 +238,7 @@ export default function TextGenerator() {
             )}
           </div>
 
-          <div className="min-h-96 bg-gray-50 rounded-xl p-4 text-sm">
+          <div className="min-h-96 bg-gray-50 rounded-xl p-4 text-sm" data-testid="generated-text">
             {isLoading ? (
               <div className="flex items-center justify-center h-96">
                 <div className="text-center">

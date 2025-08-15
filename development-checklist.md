@@ -167,3 +167,122 @@ git commit -m "test: Cypress 테스트 오류 수정 및 안정성 개선
 🤖 Generated with Claude Code
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
+
+## 🔄 최근 업데이트 (2025-08-15)
+
+### 테스트 안정성 개선
+
+#### 1. data-testid 사용 권장
+```typescript
+// ❌ 불안정한 셀렉터
+cy.get('button').contains('생성').click()
+
+// ✅ 안정적인 data-testid
+cy.get('[data-testid="generate-button"]').click()
+```
+
+#### 2. 컴포넌트별 data-testid 표준
+- **FileAnalyzer**: `data-testid="analyze-button"`, `data-testid="generated-text"`
+- **TextGenerator**: `data-testid="generate-button"`, `data-testid="copy-button"`  
+- **TodoList**: `data-testid="todo-input"`, `data-testid="add-todo-button"`, `data-testid="ai-recommend-button"`
+- **AI 추천 할 일**: `data-testid="ai-recommended-todo"`
+
+#### 3. DOM 탐색 개선
+```typescript
+// ❌ 부정확한 부모 요소 탐색
+cy.contains('할 일').parent().within(() => {
+  cy.get('input[type="checkbox"]').check()
+})
+
+// ✅ 정확한 컨테이너 탐색
+cy.contains('할 일').closest('[data-testid="todo-item"]').within(() => {
+  cy.get('input[type="checkbox"]').check()
+})
+```
+
+### 검증 로직 강화
+
+#### 1. 이전/이후 상태 비교
+```typescript
+// AI 추천 전 개수 저장
+let initialCount = 0
+cy.get('[data-testid="ai-recommended-todo"]').then(($todos) => {
+  initialCount = $todos.length
+})
+
+// AI 추천 실행 후 증가 확인
+cy.get('[data-testid="ai-recommended-todo"]').then(($newTodos) => {
+  expect($newTodos.length).to.be.greaterThan(initialCount)
+})
+```
+
+#### 2. 로딩 완료 대기
+```typescript
+// 로딩 시작 확인
+cy.get('[data-testid="ai-recommend-button"]').should('contain', '추천 중...')
+
+// 로딩 완료 확인
+cy.get('[data-testid="ai-recommend-button"]').should('contain', 'AI 추천 받기', { timeout: 30000 })
+```
+
+### Cypress 모범 사례
+
+#### 1. should() vs then() 구분
+```typescript
+// ❌ should() 내부에서 커맨드 사용
+cy.get('[data-testid="todo-item"]').should(($todos) => {
+  cy.log(`할 일 개수: ${$todos.length}개`)  // 에러!
+})
+
+// ✅ then() 사용
+cy.get('[data-testid="todo-item"]').then(($todos) => {
+  cy.log(`할 일 개수: ${$todos.length}개`)  // 정상
+})
+```
+
+#### 2. 실제 구현에 맞는 validation 테스트
+```typescript
+// 버튼 비활성화 방식
+cy.get('[data-testid="add-button"]').should('be.disabled')
+
+// 텍스트 입력 후 활성화 확인
+cy.get('input').type('테스트')
+cy.get('[data-testid="add-button"]').should('not.be.disabled')
+```
+
+### 파일 형식 검증 구현
+
+#### 컴포넌트에 validation 로직 추가
+```typescript
+const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0]
+  if (file && file.type !== 'application/pdf') {
+    setFileError('지원되지 않는 파일 형식입니다.')
+    setSelectedFile(null)
+    return
+  }
+}
+```
+
+#### UI 에러 메시지 표시
+```typescript
+{fileError && (
+  <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+    <p className="text-red-700 font-medium">{fileError}</p>
+  </div>
+)}
+```
+
+### 체크리스트 업데이트
+
+#### 테스트 실행 전
+- [ ] 모든 컴포넌트에 data-testid 추가 확인
+- [ ] Cypress baseUrl이 현재 개발 서버 포트와 일치하는지 확인
+- [ ] 파일 형식 검증 로직 구현 확인
+- [ ] AI 추천 기능의 이전/이후 상태 비교 로직 확인
+
+#### 새로운 테스트 작성 시
+- [ ] data-testid 기반 셀렉터 사용
+- [ ] should() vs then() 적절히 구분
+- [ ] 로딩 상태 시작과 완료 모두 확인
+- [ ] 실제 구현 방식에 맞는 validation 테스트 작성
