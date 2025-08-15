@@ -12,7 +12,8 @@
       "Bash(lsof:*)",
       "Bash(node:*)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(yarn cypress:open:*)"
     ],
     "deny": []
   }
