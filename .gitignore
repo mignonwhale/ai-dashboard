@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# cypress env files (보안을 위해 제외)
+cypress.env.json
+
 # vercel
 .vercel
 

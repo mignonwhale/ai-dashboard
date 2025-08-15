@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { 
   sanitizeText, 
   validateEmail, 
@@ -85,12 +86,14 @@ describe('Validation Utils', () => {
 
   describe('isValidUUID', () => {
     it('should validate correct UUIDs', () => {
-      expect(isValidUUID('123e4567-e89b-12d3-a456-426614174000')).toBe(true)
+      expect(isValidUUID('123e4567-e89b-42d3-a456-426614174000')).toBe(true)
+      expect(isValidUUID('a1b2c3d4-e5f6-47a8-9b1c-d2e3f4567890')).toBe(true)
     })
 
     it('should reject invalid UUIDs', () => {
       expect(isValidUUID('invalid-uuid')).toBe(false)
       expect(isValidUUID('123')).toBe(false)
+      expect(isValidUUID('123e4567-e89b-12d3-a456-42661417400')).toBe(false) // 너무 짧음
     })
   })
 })

@@ -26,6 +26,8 @@ AI 어시스턴트 대시보드 (AI Assistant Dashboard)
 - **React 19** - 사용자 인터페이스 라이브러리
 - **TypeScript** - 타입 안전성을 위한 JavaScript 확장
 - **DaisyUI** - Tailwind CSS 기반 UI 컴포넌트 라이브러리
+- **Vitest** - 빠른 단위 테스트 프레임워크
+- **React Testing Library** - React 컴포넌트 테스트
 - **Yarn** - 패키지 관리자
 
 #### Backend & Infrastructure
@@ -393,12 +395,13 @@ User Input → Next.js API Route → Gemini API → Database → Response
 ## 🧪 테스트 전략
 
 ### 10.1 테스트 계층
-- **Unit Tests**: 개별 컴포넌트 및 함수
-- **Integration Tests**: API 엔드포인트
-- **E2E Tests**: 주요 사용자 플로우
+- **Unit Tests**: 개별 컴포넌트 및 함수 (Vitest)
+- **Integration Tests**: API 엔드포인트 (Vitest)
+- **E2E Tests**: 주요 사용자 플로우 (Cypress)
 
 ### 10.2 테스트 도구
-- Jest + React Testing Library
+- **Vitest** + React Testing Library (단위/통합 테스트)
+- **Vitest UI** (시각적 테스트 러너)
 - Cypress (E2E)
 - MSW (API 모킹)
 
