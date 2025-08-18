@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['chart.js', 'react-chartjs-2'],
   },
+  // Cypress 파일 빌드에서 제외
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    }
+    // Cypress 관련 파일 무시
+    config.externals = [...(config.externals || []), 'cypress']
+    return config
+  },
   poweredByHeader: false,
   compress: true,
   images: {
