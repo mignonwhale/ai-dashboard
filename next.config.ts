@@ -1,12 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: ['chart.js', 'react-chartjs-2']
+    optimizePackageImports: ['chart.js', 'react-chartjs-2'],
   },
   poweredByHeader: false,
   compress: true,
@@ -18,50 +19,50 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: '/(.*)',
         headers: [
           {
-            key: "X-Content-Type-Options",
-            value: "nosniff"
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
           {
-            key: "X-Frame-Options", 
-            value: "DENY"
+            key: 'X-Frame-Options',
+            value: 'DENY',
           },
           {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin"
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
           {
-            key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://jptjpblrtgfbsfblxacn.supabase.co https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self';"
+            key: 'Content-Security-Policy',
+            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://*.supabase.co'} https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self';`,
           },
           {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()"
-          }
-        ]
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+        ],
       },
       {
-        source: "/api/(.*)",
+        source: '/api/(.*)',
         headers: [
           {
-            key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate"
-          }
-        ]
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
       },
       {
-        source: "/_next/static/(.*)",
+        source: '/_next/static/(.*)',
         headers: [
           {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable"
-          }
-        ]
-      }
-    ];
-  }
-};
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
+  },
+}
 
-export default withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer(nextConfig)
