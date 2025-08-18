@@ -30,9 +30,7 @@ export default function TextGenPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <TextGenerator />
-      </div>
+      <TextGenerator />
     </DashboardLayout>
   )
 }

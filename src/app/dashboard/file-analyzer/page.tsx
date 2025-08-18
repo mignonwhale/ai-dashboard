@@ -30,9 +30,7 @@ export default function FileAnalyzerPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <FileAnalyzer />
-      </div>
+      <FileAnalyzer />
     </DashboardLayout>
   )
 }

@@ -30,9 +30,7 @@ export default function TodosPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <TodoList />
-      </div>
+      <TodoList />
     </DashboardLayout>
   )
 }

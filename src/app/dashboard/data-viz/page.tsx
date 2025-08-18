@@ -30,9 +30,7 @@ export default function DataVizPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <DataVisualizer />
-      </div>
+      <DataVisualizer />
     </DashboardLayout>
   )
 }

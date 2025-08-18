@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
+      <div>
         {/* 메인 타이틀 섹션 */}
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">

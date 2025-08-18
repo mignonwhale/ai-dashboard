@@ -30,9 +30,7 @@ export default function ChatPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <AIChat />
-      </div>
+      <AIChat />
     </DashboardLayout>
   )
 }
