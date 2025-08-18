@@ -13,7 +13,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  ChartData,
 } from 'chart.js'
 import { Line, Bar, Pie } from 'react-chartjs-2'
 
@@ -34,7 +35,9 @@ export default function DataVisualizer() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [analysis, setAnalysis] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [chartData, setChartData] = useState<{ hasData?: boolean; [key: string]: unknown } | null>(null)
+  const [chartData, setChartData] = useState<{ hasData?: boolean; [key: string]: unknown } | null>(
+    null
+  )
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'line' | 'pie'>('bar')
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -65,7 +68,7 @@ export default function DataVisualizer() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    
+
     const files = e.dataTransfer.files
     if (files.length > 0 && files[0].name.endsWith('.csv')) {
       setSelectedFile(files[0])
@@ -87,14 +90,14 @@ export default function DataVisualizer() {
 
       const response = await fetch('/api/csv-analyze', {
         method: 'POST',
-        body: formData
+        body: formData,
       })
 
       if (!response.ok) throw new Error('CSV 분석 API 호출 실패')
 
       const data = await response.json()
       setAnalysis(data.analysis)
-      
+
       if (data.chartData) {
         setChartData(data.chartData)
       } else {
@@ -104,7 +107,7 @@ export default function DataVisualizer() {
 
       // Supabase Storage에 파일 업로드
       const filePath = `csv/${user.id}/${Date.now()}.csv`
-      
+
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('files')
         .upload(filePath, selectedFile)
@@ -113,18 +116,15 @@ export default function DataVisualizer() {
         console.error('파일 업로드 실패:', uploadError)
       } else {
         // 분석 결과를 데이터베이스에 저장
-        await supabase
-          .from('csv_analysis')
-          .insert([
-            {
-              user_id: user.id,
-              csv_url: uploadData.path,
-              analysis_text: data.analysis,
-              chart_data: data.chartData
-            }
-          ])
+        await supabase.from('csv_analysis').insert([
+          {
+            user_id: user.id,
+            csv_url: uploadData.path,
+            analysis_text: data.analysis,
+            chart_data: data.chartData,
+          },
+        ])
       }
-
     } catch (error) {
       console.error('CSV 분석 실패:', error)
       setAnalysis('죄송합니다. CSV 분석 중 오류가 발생했습니다.')
@@ -177,10 +177,15 @@ export default function DataVisualizer() {
     ]
 
     // API에서 파싱된 실제 데이터를 사용하거나, 없으면 예시 데이터 사용
-    let displayData
-    if (chartData && typeof chartData === 'object' && 'labels' in chartData && 'datasets' in chartData) {
+    let displayData: ChartData<'bar' | 'line' | 'pie'>
+    if (
+      chartData &&
+      typeof chartData === 'object' &&
+      'labels' in chartData &&
+      'datasets' in chartData
+    ) {
       // 실제 CSV에서 파싱된 데이터 사용
-      displayData = chartData
+      displayData = chartData as unknown as ChartData<'bar' | 'line' | 'pie'>
     } else {
       // 예시 데이터 (CSV 파싱이 구현되지 않았거나 실패한 경우)
       displayData = {
@@ -199,11 +204,11 @@ export default function DataVisualizer() {
 
     switch (selectedChartType) {
       case 'line':
-        return <Line data={displayData} options={commonOptions} />
+        return <Line data={displayData as ChartData<'line'>} options={commonOptions} />
       case 'pie':
-        return <Pie data={displayData} options={commonOptions} />
+        return <Pie data={displayData as ChartData<'pie'>} options={commonOptions} />
       default:
-        return <Bar data={displayData} options={commonOptions} />
+        return <Bar data={displayData as ChartData<'bar'>} options={commonOptions} />
     }
   }
 
@@ -230,18 +235,28 @@ export default function DataVisualizer() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-purple-500 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
                 </svg>
               </div>
               <h2 className="text-xl font-semibold text-gray-900">CSV 파일 업로드</h2>
             </div>
 
             {/* 드래그 앤 드롭 영역 */}
-            <div 
+            <div
               className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${
-                isDragging 
-                  ? 'border-purple-500 bg-purple-50' 
+                isDragging
+                  ? 'border-purple-500 bg-purple-50'
                   : 'border-purple-300 hover:border-purple-400'
               }`}
               onClick={() => fileInputRef.current?.click()}
@@ -251,8 +266,18 @@ export default function DataVisualizer() {
               onDrop={handleDrop}
             >
               <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                <svg
+                  className="w-8 h-8 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -276,13 +301,25 @@ export default function DataVisualizer() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <svg
+                        className="w-5 h-5 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
                       </svg>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{selectedFile.name}</p>
-                      <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)} • CSV</p>
+                      <p className="text-sm text-gray-500">
+                        {formatFileSize(selectedFile.size)} • CSV
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -297,8 +334,18 @@ export default function DataVisualizer() {
                       onClick={clearFile}
                       className="text-gray-500 hover:text-gray-700 p-2 rounded-lg transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -312,8 +359,18 @@ export default function DataVisualizer() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900">차트 타입 선택</h3>
@@ -376,8 +433,18 @@ export default function DataVisualizer() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-500 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900">데이터 시각화</h3>
@@ -385,15 +452,23 @@ export default function DataVisualizer() {
           </div>
 
           {chartData ? (
-            <div className="h-96">
-              {renderChart()}
-            </div>
+            <div className="h-96">{renderChart()}</div>
           ) : (
             <div className="h-96 flex items-center justify-center text-gray-500">
               <div className="text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <svg
+                    className="w-8 h-8 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                 </div>
                 <p className="font-medium">시각화 대기 중</p>
@@ -410,7 +485,11 @@ export default function DataVisualizer() {
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div>
